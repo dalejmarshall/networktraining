@@ -44,8 +44,7 @@
                 }
               ]
             }
-        },
-        "customData": "[concat('#include\n','https://github.com/dalejmarshall/networktraining/cloud-init.txt')]"
+        }
     },
     "resources": [
         {
@@ -101,7 +100,6 @@
                 "computerName": "webVM",
                 "adminUsername": "[parameters('adminUsername')]",
                 "adminPassword": "[parameters('adminPassword')]",
-                "customData": "[base64(variables('customData'))]",
                 "linuxConfiguration": "[if(equals(variables('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
               },
               "storageProfile": {
@@ -126,6 +124,27 @@
                 "bootDiagnostics": {
                   "enabled": false
                 }
+              }
+            }
+          },
+          {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat('webVM','/newuserscript')]",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[variables('location')]",
+            "dependsOn": [
+              "[concat('Microsoft.Compute/virtualMachines/', 'webVM')]"
+            ],
+            "properties": {
+              "publisher": "Microsoft.Azure.Extensions",
+              "type": "CustomScript",
+              "typeHandlerVersion": "2.0",
+              "autoUpgradeMinorVersion": true,
+              "settings": {
+                "fileUris": [
+                  "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/apache2-on-ubuntu-vm/install_apache.sh"
+                ],
+                "commandToExecute": "sh install_apache.sh"
               }
             }
           }
