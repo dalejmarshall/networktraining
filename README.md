@@ -5,7 +5,7 @@
 </a>
 
 This template will deploy 3 Virtual Machines, one in each subnet you have created
-- WebVM
+- 2 x WebVM
 - AppVM
 - DataVM
 
