@@ -25,7 +25,7 @@
         "publicIPAddress1Name": "publicIp1",
         "publicIPAddress2Name": "publicIp2",
         "dnsLabelPrefix1": "[concat('ansnt', uniqueString(resourceGroup().id))]",
-        "dnsLabelPrefix2": "[concat('ansnt', uniqueString(resourceGroup().id))]",
+        "dnsLabelPrefix2": "[concat('ansnt',uniqueString(subscription().subscriptionId))]",
         "publicIPAddressType": "Dynamic",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks','VNET1')]",
         "webSubnetID": "[concat(variables('vnetID'),'/subnets/','WebTier')]",
