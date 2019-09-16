@@ -1,0 +1,136 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+              "description": "User name for the Virtual Machines."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+              "description": "Password for the Virtual Machines. SSH key is recommended."
+            }
+        },
+        "dnsLabelPrefix": {
+            "type": "string",
+            "metadata": {
+              "description": "Unique DNS Name for the Storage Account where the Virtual Machine's disks will be placed."
+            }
+          }
+    },
+    "variables": {
+        "location": "West Europe",
+        "vmSize": "Standard_D1",
+        "ubuntuOSVersion": "18.04-LTS",
+        "authenticationType": "password",
+        "imagePublisher": "Canonical",
+        "imageOffer": "UbuntuServer",
+        "publicIPAddressName": "publicIp1",
+        "publicIPAddressType": "Dynamic",
+        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks','VNET1')]",
+        "webSubnetID": "[concat(variables('vnetID'),'/subnets/','WebTier')]",
+        "AppSubnetID": "[concat(variables('vnetID'),'/subnets/','AppTier')]",
+        "DataSubnetID": "[concat(variables('vnetID'),'/subnets/','DataTier')]",
+        "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('adminPassword')]"
+                }
+              ]
+            }
+        },
+        "customData": "[concat('#include\n','https://github.com/dalejmarshall/networktraining/cloud-init.txt')]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('publicIPAddressName')]",
+            "location": "[variables('location')]",
+            "properties": {
+              "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+              "dnsSettings": {
+                "domainNameLabel": "[parameters('dnsLabelPrefix')]"
+              }
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "webvm-nic",
+            "location": "[variables('location')]",
+            "dependsOn": [
+              "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+            ],
+            "properties": {
+              "ipConfigurations": [
+                {
+                  "name": "ipconfig1",
+                  "properties": {
+                    "privateIPAllocationMethod": "Dynamic",
+                    "publicIPAddress": {
+                      "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+                    },
+                    "subnet": {
+                      "id": "[variables('webSubnetID')]"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "apiVersion": "2016-04-30-preview",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "webVM",
+            "location": "[variables('location')]",
+            "dependsOn": [
+              "[concat('Microsoft.Network/networkInterfaces/', 'webvm-nic')]"
+            ],
+            "properties": {
+              "hardwareProfile": {
+                "vmSize": "[variables('vmSize')]"
+              },
+              "osProfile": {
+                "computerName": "webVM",
+                "adminUsername": "[parameters('adminUsername')]",
+                "adminPassword": "[parameters('adminPassword')]",
+                "customData": "[base64(variables('customData'))]",
+                "linuxConfiguration": "[if(equals(variables('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
+              },
+              "storageProfile": {
+                "imageReference": {
+                  "publisher": "[variables('imagePublisher')]",
+                  "offer": "[variables('imageOffer')]",
+                  "sku": "[variables('ubuntuOSVersion')]",
+                  "version": "latest"
+                },
+                "osDisk": {
+                  "createOption": "FromImage"
+                }
+              },
+              "networkProfile": {
+                "networkInterfaces": [
+                  {
+                    "id": "[resourceId('Microsoft.Network/networkInterfaces','webvm-nic')]"
+                  }
+                ]
+              },
+              "diagnosticsProfile": {
+                "bootDiagnostics": {
+                  "enabled": false
+                }
+              }
+            }
+          }
+          
+
+    ],
+    "outputs": {}
+}
