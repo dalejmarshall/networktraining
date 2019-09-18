@@ -274,7 +274,7 @@
               "networkProfile": {
                 "networkInterfaces": [
                   {
-                    "id": "[resourceId('Microsoft.Network/networkInterfaces','appVM')]"
+                    "id": "[resourceId('Microsoft.Network/networkInterfaces','appVM-nic')]"
                   }
                 ]
               },
@@ -317,7 +317,7 @@
               "networkProfile": {
                 "networkInterfaces": [
                   {
-                    "id": "[resourceId('Microsoft.Network/networkInterfaces','dataVM')]"
+                    "id": "[resourceId('Microsoft.Network/networkInterfaces','datavm-nic')]"
                   }
                 ]
               },
