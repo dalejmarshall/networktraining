@@ -17,7 +17,7 @@
     },
     "variables": {
         "location": "West Europe",
-        "vmSize": "Standard_D1",
+        "vmSize": "Standard_D1_v2",
         "ubuntuOSVersion": "18.04-LTS",
         "authenticationType": "password",
         "imagePublisher": "Canonical",
