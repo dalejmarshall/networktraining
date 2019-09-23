@@ -13,11 +13,23 @@
             "metadata": {
               "description": "Password for the Virtual Machines. SSH key is recommended."
             }
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_D1_v2",
+            "allowedValues": [
+              "Standard_D1_v2",
+              "Standard_D2_v2",
+              "Standard_DS2",
+              "Standard_DS2v2"
+            ],
+      "metadata": {
+        "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
+      }
         }
     },
     "variables": {
         "location": "West Europe",
-        "vmSize": "Standard_D1_v2",
         "ubuntuOSVersion": "18.04-LTS",
         "authenticationType": "password",
         "imagePublisher": "Canonical",
@@ -180,7 +192,7 @@
                 "id": "[resourceId('Microsoft.Compute/availabilitySets','webVMs')]"
               },
               "hardwareProfile": {
-                "vmSize": "[variables('vmSize')]"
+                "vmSize": "[parameters('vmSize')]"
               },
               "osProfile": {
                 "computerName": "webVM1",
@@ -226,7 +238,7 @@
                 "id": "[resourceId('Microsoft.Compute/availabilitySets','webVMs')]"
               },
               "hardwareProfile": {
-                "vmSize": "[variables('vmSize')]"
+                "vmSize": "[parameters('vmSize')]"
               },
               "osProfile": {
                 "computerName": "webVM2",
@@ -269,7 +281,7 @@
             ],
             "properties": {
               "hardwareProfile": {
-                "vmSize": "[variables('vmSize')]"
+                "vmSize": "[parameters('vmSize')]"
               },
               "osProfile": {
                 "computerName": "appVM",
@@ -312,7 +324,7 @@
             ],
             "properties": {
               "hardwareProfile": {
-                "vmSize": "[variables('vmSize')]"
+                "vmSize": "[parameters('vmSize')]"
               },
               "osProfile": {
                 "computerName": "dataVM",
