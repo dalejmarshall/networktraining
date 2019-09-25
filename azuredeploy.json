@@ -39,7 +39,7 @@
         "dnsLabelPrefix1": "[concat('ansnt', uniqueString(resourceGroup().id))]",
         "dnsLabelPrefix2": "[concat('ansnt',uniqueString(subscription().subscriptionId))]",
         "publicIPAddressType": "Dynamic",
-        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks','VNET1')]",
+        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks','VNET')]",
         "webSubnetID": "[concat(variables('vnetID'),'/subnets/','WebTier')]",
         "AppSubnetID": "[concat(variables('vnetID'),'/subnets/','AppTier')]",
         "DataSubnetID": "[concat(variables('vnetID'),'/subnets/','DataTier')]",
